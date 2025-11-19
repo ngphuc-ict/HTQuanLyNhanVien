@@ -1,6 +1,6 @@
 from database import get_database
 from models import *
-
+from datetime import datetime, date
 
 class NhanVienService:
     def __init__(self):
@@ -8,6 +8,15 @@ class NhanVienService:
         self.col = self.db["nhanvien"]
 
     def them_nhan_vien(self, nv: NhanVien):
+       
+        data = nv.__dict__.copy()
+        
+        # CHUYỂN ĐỔI DATE/DATETIME SANG CHUỖI AN TOÀN TRƯỚC KHI INSERT
+        for key, value in data.items():
+            if isinstance(value, (datetime, date)):
+                data[key] = value.isoformat()
+        
+       
         self.col.insert_one(nv.__dict__)
         print("Thêm nhân viên thành công!")
 
@@ -32,6 +41,13 @@ class DepartmentService:
         self.col = self.db["phongban"]
 
     def them_phong_ban(self, dept: Department):
+  
+        data = dept.__dict__.copy()
+
+        # CHUYỂN ĐỔI DATE/DATETIME SANG CHUỖI AN TOÀN TRƯỚC KHI INSERT
+        for key, value in data.items():
+            if isinstance(value, (datetime, date)):
+                data[key] = value.isoformat()
         self.col.insert_one(dept.__dict__)
         print("Thêm phòng ban thành công!")
 
