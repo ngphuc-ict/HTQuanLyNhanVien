@@ -77,13 +77,6 @@ class AttendanceService:
         self.col.insert_one(attendance.__dict__)
         print("Check-in thành công!")
 
-    # def check_out(self, employee_id, date, check_out_time):
-    #     self.col.update_one(
-    #         {"employee_id": employee_id, "date": date},
-    #         {"$set": {"check_out": check_out_time}}
-    #     )
-    #     print("Check-out thành công!")
-    # Trong class AttendanceService
     def check_out(self, employee_id, date_str, check_out_time):
         # 1. Lấy dữ liệu check-in cũ
         record = self.col.find_one({"employee_id": employee_id, "date": date_str})

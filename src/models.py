@@ -95,35 +95,12 @@ class Position:
 # 4. CHẤM CÔNG
 # ===============================
 
-# class Attendance:
-#     def __init__(self, attendance_id, employee_id, date, check_in, check_out, status,
-#                  late_minutes=0, leave_minutes=0):
-#         self.attendance_id = attendance_id
-#         self.employee_id = employee_id
-#         self.date = date
-#         self.check_in = check_in
-#         self.check_out = check_out
-#         self.status = status
-#         self.late_minutes = late_minutes
-#         self.leave_minutes = leave_minutes
-
-#     def calculate_working_hours(self):
-#         if self.check_in and self.check_out:
-#             fmt = "%H:%M"
-#             ci = datetime.strptime(self.check_in, fmt)
-#             co = datetime.strptime(self.check_out, fmt)
-#             diff = co - ci
-#             return diff.seconds // 3600  # giờ
-#         return 0
-
-
-# Thay thế class Attendance cũ bằng class này:
 class Attendance:
     # Định nghĩa các ca làm việc (Giờ vào - Giờ ra)
     SHIFTS = {
         "Sáng": ("08:00", "17:00"),
         "Chiều": ("13:00", "22:00"),
-        "Tối": ("22:00", "06:00") # Ca qua đêm
+        "Tối": ("22:00", "06:00")
     }
 
     def __init__(self, attendance_id, employee_id, date, check_in, check_out=None, status="Present",
