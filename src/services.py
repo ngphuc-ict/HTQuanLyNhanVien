@@ -9,13 +9,12 @@ class NhanVienService:
 
     def them_nhan_vien(self, nv: NhanVien):
         
-        data = nv.__dict__.copy()
+        data = vars(nv).copy()
         for key, value in data.items():
-            if isinstance(value, (datetime, date)):
+            if isinstance(value, date):
                 data[key] = value.isoformat()
-        
-       
-        self.col.insert_one(nv.__dict__)
+
+        self.col.insert_one(data)
         print("Thêm nhân viên thành công!")
 
     def lay_ds_nhan_vien(self):
@@ -40,11 +39,11 @@ class DepartmentService:
 
     def them_phong_ban(self, dept: Department):
   
-        data = dept.__dict__.copy()
+        data = vars(dept).copy()
         for key, value in data.items():
-            if isinstance(value, (datetime, date)):
+            if isinstance(value, date):
                 data[key] = value.isoformat()
-        self.col.insert_one(dept.__dict__)
+        self.col.insert_one(data)
         print("Thêm phòng ban thành công!")
 
     def lay_ds_phong_ban(self):
@@ -57,7 +56,7 @@ class PositionService:
         self.col = self.db["chucvu"]
 
     def them_chuc_vu(self, pos: Position):
-        self.col.insert_one(pos.__dict__)
+        self.col.insert_one(vars(pos))
         print("Thêm chức vụ thành công!")
 
     def lay_ds_chuc_vu(self):
@@ -70,14 +69,14 @@ class AttendanceService:
         self.col = self.db["chamcong"]
 
     def check_in(self, attendance: Attendance):
-        self.col.insert_one(attendance.__dict__)
+        self.col.insert_one(vars(attendance))
         print("Check-in thành công!")
 
     def check_out(self, employee_id, date_str, check_out_time):
         # 1. Lấy dữ liệu check-in cũ
         record = self.col.find_one({"employee_id": employee_id, "date": date_str})
         if not record:
-            print("❌ Không tìm thấy dữ liệu Check-in!")
+            print("Không tìm thấy dữ liệu Check-in!")
             return
 
         # 2. Tạo object để tính toán
@@ -105,7 +104,7 @@ class AttendanceService:
                 "status": "Completed"
             }}
         )
-        print(f"✅ Check-out xong! Đi muộn: {att.late_minutes}p, Về sớm: {att.leave_minutes}p")
+        print(f"Check-out xong! Đi muộn: {att.late_minutes}p, Về sớm: {att.leave_minutes}p")
 
     def lay_cham_cong(self, employee_id):
         return list(self.col.find({"employee_id": employee_id}))
@@ -117,7 +116,7 @@ class OvertimeService:
         self.col = self.db["overtime"]
 
     def gui_don_ot(self, ot: OvertimeRequest):
-        self.col.insert_one(ot.__dict__)
+        self.col.insert_one(vars(ot))
         print("Gửi đơn OT thành công!")
 
     def duyet_ot(self, request_id, approver_id, status):
@@ -134,7 +133,7 @@ class SalaryService:
         self.col = self.db["luong"]
 
     def luu_bang_luong(self, salary: SalaryRecord):
-        self.col.insert_one(salary.__dict__)
+        self.col.insert_one(vars(salary))
         print("Lưu bảng lương thành công!")
 
     def lay_luong_nhan_vien(self, employee_id):
