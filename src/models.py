@@ -73,13 +73,12 @@ class Department:
 # 3. CHỨC VỤ
 
 class Position:
-    def __init__(self, position_id, title, level, min_salary, max_salary, basic_salary):
+    def __init__(self, position_id, title, level, min_salary, max_salary):
         self.position_id = position_id
         self.title = title
         self.level = level
         self.min_salary = min_salary
         self.max_salary = max_salary
-        self.basic_salary = basic_salary
 
 # 4. CHẤM CÔNG
 

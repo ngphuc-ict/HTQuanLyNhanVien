@@ -74,7 +74,7 @@ def menu_nhan_vien():
                 df = pd.DataFrame(ds)
                 print(df.to_string(index=False))
             else:
-                print("📭 Không có dữ liệu!")
+                print("Không có dữ liệu!")
 
         elif ch == "3":
             eid = nhap_khong_trong("Nhập ID")
@@ -145,9 +145,8 @@ def menu_chuc_vu():
             level = nhap_khong_trong("Level")
             min_salary = nhap_float("Lương tối thiểu")
             max_salary = nhap_float("Lương tối đa")
-            basic_salary = nhap_float("Lương cơ bản")
 
-            pos = Position(pid, title, level, min_salary, max_salary, basic_salary)
+            pos = Position(pid, title, level, min_salary, max_salary)
             pos_service.them_chuc_vu(pos)
 
         elif ch == "2":
@@ -252,8 +251,7 @@ def menu_luong():
 
             # 4. Tính toán
             salary_id = f"SAL-{eid}-{nam}{thang}"
-            rec = SalaryRecord(salary_id, eid, int(thang), int(nam), basic_salary, 
-                               ngay_cong, ot_hours, bonus, kpi, allowance, tax=0)
+            rec = SalaryRecord(salary_id, eid, int(thang), int(nam), ngay_cong, ot_hours, bonus, kpi, allowance, tax=0)
             
             gross = rec.calculate_gross_salary()
             net = rec.calculate_net_salary(tong_muon) # Trừ tiền phạt đi muộn ở đây
