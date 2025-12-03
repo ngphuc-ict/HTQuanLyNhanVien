@@ -1,5 +1,9 @@
 from datetime import *
 
+# Cấu hình mặc định cho tính lương
+WORKDAYS_PER_MONTH = 26
+HOURS_PER_DAY = 8
+
 # 1. NHÂN VIÊN
 
 class NhanVien:
@@ -373,12 +377,14 @@ class SalaryRecord:
         self.tax = tax  # thuế khác nếu có
 
     def calculate_overtime_pay(self):
-        # OT: số giờ × 1.5 × (lương / 8)
-        return self.overtime_hours * 1.5 * (self.basic_salary / 8)
+        try:
+            hourly = self.basic_salary / (WORKDAYS_PER_MONTH * HOURS_PER_DAY)
+        except Exception:
+            hourly = 0
+        return self.overtime_hours * 1.5 * hourly
 
     def calculate_basic_salary_by_workdays(self):
-        # Lương cơ bản theo ngày công (giả sử 26 ngày chuẩn)
-        return (self.basic_salary / 26) * self.working_days
+        return (self.basic_salary / WORKDAYS_PER_MONTH) * self.working_days
 
     def calculate_gross_salary(self):
         gross = (
@@ -402,3 +408,5 @@ class SalaryRecord:
         deductions = bhxh + cong_doan + thue_tncn + phat_di_muon + self.tax
 
         return gross - deductions
+    
+
