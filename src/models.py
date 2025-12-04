@@ -3,6 +3,28 @@ from datetime import *
 # Cấu hình mặc định cho tính lương
 WORKDAYS_PER_MONTH = 26
 HOURS_PER_DAY = 8
+POSITION_RULES = {
+    "Intern": {
+        "allowance_rate": 0.05,   
+        "bonus_rate": 0.0,        
+        "overtime_multiplier": 1.0
+    },
+    "Nhân viên": {
+        "allowance_rate": 0.1,    
+        "bonus_rate": 0.05,       
+        "overtime_multiplier": 1.5
+    },
+    "Trưởng phòng": {
+        "allowance_rate": 0.2,    
+        "bonus_rate": 0.1,        
+        "overtime_multiplier": 1.2
+    },
+    "Giám đốc": {
+        "allowance_rate": 0.3,    
+        "bonus_rate": 0.2,        
+        "overtime_multiplier": 0 
+    }
+}
 
 # 1. NHÂN VIÊN
 
@@ -364,7 +386,7 @@ class Attendance:
 class SalaryRecord:
     def __init__(self, salary_id, employee_id, month, year,
                  basic_salary, working_days, overtime_hours,
-                 bonus, kpi, allowance, tax):
+                 bonus, kpi, allowance, tax, position):
         self.salary_id = salary_id
         self.employee_id = employee_id
         self.month = month
@@ -376,38 +398,38 @@ class SalaryRecord:
         self.kpi = kpi
         self.allowance = allowance
         self.tax = tax  # thuế khác nếu có
-
-    def calculate_overtime_pay(self):
+        self.position = position
+    def calculate_salary_by_position(self, late_minutes):
+        rules = POSITION_RULES.get(self.position, {})
+        
+        # Phụ cấp và thưởng theo vị trí
+        allowance = rules.get("allowance_rate", 0) * self.basic_salary
+        bonus = rules.get("bonus_rate", 0) * self.basic_salary
+        
+        # Overtime theo vị trí
         try:
             hourly = self.basic_salary / (WORKDAYS_PER_MONTH * HOURS_PER_DAY)
         except Exception:
             hourly = 0
-        return self.overtime_hours * 1.5 * hourly
-
-    def calculate_basic_salary_by_workdays(self):
-        return (self.basic_salary / WORKDAYS_PER_MONTH) * self.working_days
-
-    def calculate_gross_salary(self):
+        overtime_pay = self.overtime_hours * rules.get("overtime_multiplier", 1.5) * hourly
+        
+        # Tổng lương gộp
         gross = (
             self.calculate_basic_salary_by_workdays()
-            + self.calculate_overtime_pay()
-            + self.bonus
+            + overtime_pay
+            + bonus
             + self.kpi
-            + self.allowance
+            + allowance
         )
-        return gross
-
-    def calculate_net_salary(self, late_minutes):
-        gross = self.calculate_gross_salary()
-
-        # Khấu trừ theo báo cáo
+        
+        # Khấu trừ
         bhxh = 0.101 * self.basic_salary
         cong_doan = 0.01 * self.basic_salary
         thue_tncn = 0.05 * self.basic_salary
         phat_di_muon = 2000 * late_minutes
-
+        
         deductions = bhxh + cong_doan + thue_tncn + phat_di_muon + self.tax
-
+        
         return gross - deductions
     
 
