@@ -65,7 +65,7 @@ class Position:
         self.min_salary = min_salary
         self.max_salary = max_salary
 
-# 4. CHẤM CÔNG
+# CHẤM CÔNG
 class Attendance:
     # Định nghĩa ca mặc định
     SHIFTS = {
@@ -152,23 +152,12 @@ class Attendance:
             "status": self.status
         }
 
-
-
-# ===============================
-# 6. BẢNG LƯƠNG
-# ===============================
-
+# BẢNG LƯƠNG
 WORKDAYS_PER_MONTH = 22
 HOURS_PER_DAY = 8
 
 class SalaryRecord:
-    def __init__(self, salary_id, employee_id, month, year,
-
-                 working_days, overtime_hours, bonus, kpi, allowance, tax): # Đã sửa constructor
-
-                 basic_salary, working_days, overtime_hours,
-                 bonus=0, kpi=0, allowance=0, tax=0, position=""):
-    
+    def __init__(self, salary_id, employee_id, month, year, working_days, overtime_hours, bonus, kpi, allowance, tax):
         self.salary_id = salary_id
         self.employee_id = employee_id
         self.month = month
