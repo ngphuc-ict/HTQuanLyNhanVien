@@ -74,7 +74,11 @@ def menu_nhan_vien():
             if ds:
                 df = pd.DataFrame(ds)
                 df = df.drop(columns= '_id')
-                df = df.rename(columns={'employee_id': 'ID', 'ho_ten': 'Họ Tên', 'ngay_sinh': 'Ngày Sinh', 'gioi_tinh': 'Giới Tính', 'dept_id': 'Phòng Ban', 'position_id': 'Chức Vụ', 'ngay_vao_lam': 'Ngày Vào Làm', 'email': 'Email', 'phone': 'SĐT', 'address': 'Địa Chỉ', 'status': 'Trạng Thái'})
+                df = df.rename(columns={'employee_id': 'ID', 'ho_ten': 'Họ Tên',
+                                        'ngay_sinh': 'Ngày Sinh', 'gioi_tinh': 'Giới Tính', 
+                                        'dept_id': 'Phòng Ban', 'position_id': 'Chức Vụ', 
+                                        'ngay_vao_lam': 'Ngày Vào Làm', 'email': 'Email', 
+                                        'phone': 'SĐT', 'address': 'Địa Chỉ', 'status': 'Trạng Thái'})
                 print(df)
             else:
                 print("Không có dữ liệu!")
@@ -85,7 +89,11 @@ def menu_nhan_vien():
             if result:
                 df = pd.DataFrame(result)
                 df = df.drop(columns='_id')
-                df = df.rename(columns={'employee_id': 'ID', 'ho_ten': 'Họ Tên', 'ngay_sinh': 'Ngày Sinh', 'gioi_tinh': 'Giới Tính', 'dept_id': 'Phòng Ban', 'position_id': 'Chức Vụ', 'ngay_vao_lam': 'Ngày Vào Làm', 'email': 'Email', 'phone': 'SĐT', 'address': 'Địa Chỉ', 'status': 'Trạng Thái'})
+                df = df.rename(columns={'employee_id': 'ID', 'ho_ten': 'Họ Tên', 
+                                        'ngay_sinh': 'Ngày Sinh', 'gioi_tinh': 'Giới Tính', 
+                                        'dept_id': 'Phòng Ban', 'position_id': 'Chức Vụ', 
+                                        'ngay_vao_lam': 'Ngày Vào Làm', 'email': 'Email', 
+                                        'phone': 'SĐT', 'address': 'Địa Chỉ', 'status': 'Trạng Thái'})
                 print(df)
             else:
                 print("Không tìm thấy nhân viên với ID này!")
@@ -96,7 +104,11 @@ def menu_nhan_vien():
             if result:
                 df = pd.DataFrame(result)
                 df = df.drop(columns='_id')
-                df = df.rename(columns={'employee_id': 'ID', 'ho_ten': 'Họ Tên', 'ngay_sinh': 'Ngày Sinh', 'gioi_tinh': 'Giới Tính', 'dept_id': 'Phòng Ban', 'position_id': 'Chức Vụ', 'ngay_vao_lam': 'Ngày Vào Làm', 'email': 'Email', 'phone': 'SĐT', 'address': 'Địa Chỉ', 'status': 'Trạng Thái'})
+                df = df.rename(columns={'employee_id': 'ID', 'ho_ten': 'Họ Tên', 
+                                        'ngay_sinh': 'Ngày Sinh', 'gioi_tinh': 'Giới Tính', 
+                                        'dept_id': 'Phòng Ban', 'position_id': 'Chức Vụ', 
+                                        'ngay_vao_lam': 'Ngày Vào Làm', 'email': 'Email', 
+                                        'phone': 'SĐT', 'address': 'Địa Chỉ', 'status': 'Trạng Thái'})
                 print(df)
             else:
                 print("Không tìm thấy nhân viên với tên này!")
@@ -106,7 +118,7 @@ def menu_nhan_vien():
 
         elif ch == "6":
             eid = nhap_khong_trong("ID nhân viên cần cập nhật")
-            field = nhap_khong_trong("Cột cần sửa")
+            field = nhap_khong_trong("Khóa cần sửa")
             value = nhap_khong_trong("Giá trị mới")
             nv_service.cap_nhat_nhan_vien(eid, {field: value})
 
