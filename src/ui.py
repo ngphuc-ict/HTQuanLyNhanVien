@@ -151,6 +151,9 @@ def menu_phong_ban():
         elif ch == "2":
             ds = dept_service.lay_ds_phong_ban()
             if ds:
+                for x in ds:
+                    if 'budget' in x:
+                        x['budget'] = str(x['budget'])
                 df = pd.DataFrame(ds)
                 df = df.drop(columns= '_id')
                 df = df.rename(columns={'dept_id': 'ID Phòng Ban', 'name': 'Tên Phòng Ban', 'manager_id': 'Trưởng Phòng', 'created_date': 'Ngày Tạo', 'budget': 'Ngân Sách'})
