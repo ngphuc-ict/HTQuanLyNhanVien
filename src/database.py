@@ -4,8 +4,8 @@ from pymongo import MongoClient
 
 load_dotenv()
 
-mongo_uri = os.getenv("mongodb+srv://tvthuwork_db_user:7B9JRb6YJErpNNKd@cluster.mongodb.net/")
-db_name = os.getenv("test")
+mongo_uri = os.getenv("MONGO_URI")
+db_name = os.getenv("DB_NAME")
 
 def get_database():
     try:

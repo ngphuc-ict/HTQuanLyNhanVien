@@ -20,30 +20,6 @@ class NhanVien:
         self.address = address
         self.status = status
 
-    def hien_thi_thong_tin(self):
-        print("----- THÔNG TIN NHÂN VIÊN -----")
-        print("ID:", self.employee_id)
-        print("Họ tên:", self.ho_ten)
-        print("Giới tính:", self.gioi_tinh)
-        print("Ngày sinh:", self.ngay_sinh)
-        print("Phòng ban:", self.dept_id)
-        print("Chức vụ:", self.position_id)
-        print("Ngày vào làm:", self.ngay_vao_lam)
-        print("Email:", self.email)
-        print("SĐT:", self.phone)
-        print("Địa chỉ:", self.address)
-        print("Trạng thái:", self.status)
-
-    def tinh_tuoi(self):
-        today = date.today()
-        ns = datetime.strptime(self.ngay_sinh, "%Y-%m-%d").date()
-        return today.year - ns.year - ((today.month, today.day) < (ns.month, ns.day))
-
-    def tinh_tham_nien(self):
-        today = date.today()
-        nvl = datetime.strptime(self.ngay_vao_lam, "%Y-%m-%d").date()
-        return today.year - nvl.year - ((today.month, today.day) < (nvl.month, nvl.day))
-
 # 2. PHÒNG BAN
 
 class Department:
@@ -53,26 +29,6 @@ class Department:
         self.manager_id = manager_id
         self.created_date = created_date
         self.budget = budget
-
-    def get_employee_count(self, employees):
-        count = 0
-        for e in employees:
-            if e.dept_id == self.dept_id:
-                count += 1
-        return count
-
-    def get_manager_info(self, employees):
-        for e in employees:
-            if e.employee_id == self.manager_id:
-                return e.ho_ten
-        return "Không tìm thấy"
-
-    def get_department_salary_budget(self, salaries):
-        total = 0
-        for s in salaries:
-            if s.employee_id == self.manager_id:
-                total += s.calculate_net_salary(0)
-        return total
 
 # 3. CHỨC VỤ
 

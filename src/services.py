@@ -17,11 +17,33 @@ class NhanVienService:
         self.col.insert_one(data)
         print("Thêm nhân viên thành công!")
 
+    def hien_thi_thong_tin(self, employee):
+        print("----- THÔNG TIN NHÂN VIÊN -----")
+        print("ID:", employee['employee_id'])
+        print("Họ tên:", employee['ho_ten'])
+        print("Giới tính:", employee['gioi_tinh'])
+        print("Ngày sinh:", employee['ngay_sinh'])
+        print("Phòng ban:", employee['dept_id'])
+        print("Chức vụ:", employee['position_id'])
+        print("Ngày vào làm:", employee['ngay_vao_lam'])
+        print("Email:", employee['email'])
+        print("SĐT:", employee['phone'])
+        print("Địa chỉ:", employee['address'])
+        print("Trạng thái:", employee['status'])
+
     def lay_ds_nhan_vien(self):
         return list(self.col.find())
 
     def tim_theo_id(self, employee_id):
-        return self.col.find_one({"employee_id": employee_id})
+        return list(self.col.find({"employee_id": employee_id}))
+
+    def tim_theo_ten(self, name):
+        employees = list(self.col.find())
+        result = []
+        for e in employees:
+            if name.lower() in e['ho_ten'].lower():
+                result.append(e)
+        return result
 
     def xoa_nhan_vien(self, employee_id):
         self.col.delete_one({"employee_id": employee_id})
@@ -48,6 +70,19 @@ class DepartmentService:
 
     def lay_ds_phong_ban(self):
         return list(self.col.find())
+    
+    def dem_so_nhan_vien(self, dept_id, employees):
+        count = 0
+        for e in employees:
+            if e['dept_id'] == dept_id:
+                count += 1
+        return count
+
+    def thong_tin_truong_phong(self, manager_id, employees):
+        for e in employees:
+            if e['employee_id'] == manager_id:
+                return e['ho_ten']
+        return "Không tìm thấy"
 
 
 class PositionService:

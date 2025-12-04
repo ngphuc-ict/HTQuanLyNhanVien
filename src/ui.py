@@ -45,8 +45,9 @@ def menu_nhan_vien():
         print("1. Thêm nhân viên")
         print("2. Danh sách nhân viên")
         print("3. Tìm theo ID")
-        print("4. Xóa")
-        print("5. Cập nhật")
+        print("4. Tìm theo tên")
+        print("5. Xóa")
+        print("6. Cập nhật")
         print("0. Quay lại")
         ch = input("Chọn: ").strip()
 
@@ -80,13 +81,30 @@ def menu_nhan_vien():
 
         elif ch == "3":
             eid = nhap_khong_trong("Nhập ID")
-            print(nv_service.tim_theo_id(eid))
-
+            result = nv_service.tim_theo_id(eid)
+            if result:
+                df = pd.DataFrame(result)
+                df = df.drop(columns='_id')
+                df = df.rename(columns={'employee_id': 'ID', 'ho_ten': 'Họ Tên', 'ngay_sinh': 'Ngày Sinh', 'gioi_tinh': 'Giới Tính', 'dept_id': 'Phòng Ban', 'position_id': 'Chức Vụ', 'ngay_vao_lam': 'Ngày Vào Làm', 'email': 'Email', 'phone': 'SĐT', 'address': 'Địa Chỉ', 'status': 'Trạng Thái'})
+                print(df.to_string(index=False))
+            else:
+                print("Không tìm thấy nhân viên với ID này!")
+        
         elif ch == "4":
+            name = nhap_khong_trong("Nhập tên")
+            result = nv_service.tim_theo_ten(name)
+            if result:
+                df = pd.DataFrame(result)
+                df = df.drop(columns='_id')
+                df = df.rename(columns={'employee_id': 'ID', 'ho_ten': 'Họ Tên', 'ngay_sinh': 'Ngày Sinh', 'gioi_tinh': 'Giới Tính', 'dept_id': 'Phòng Ban', 'position_id': 'Chức Vụ', 'ngay_vao_lam': 'Ngày Vào Làm', 'email': 'Email', 'phone': 'SĐT', 'address': 'Địa Chỉ', 'status': 'Trạng Thái'})
+                print(df.to_string(index=False))
+            else:
+                print("Không tìm thấy nhân viên với tên này!")
+        elif ch == "5":
             eid = nhap_khong_trong("Nhập ID để xóa")
             nv_service.xoa_nhan_vien(eid)
 
-        elif ch == "5":
+        elif ch == "6":
             eid = nhap_khong_trong("ID nhân viên cần cập nhật")
             field = nhap_khong_trong("Trường cần sửa")
             value = nhap_khong_trong("Giá trị mới")
@@ -104,6 +122,7 @@ def menu_phong_ban():
         print("\n=== PHÒNG BAN ===")
         print("1. Thêm phòng ban")
         print("2. Danh sách phòng ban")
+        print("3. Thống kê số nhân viên theo phòng ban")
         print("0. Quay lại")
         ch = input("Chọn: ").strip()
 
@@ -124,6 +143,18 @@ def menu_phong_ban():
                 df = df.drop(columns= '_id')
                 df = df.rename(columns={'dept_id': 'ID Phòng Ban', 'name': 'Tên Phòng Ban', 'manager_id': 'Trưởng Phòng', 'created_date': 'Ngày Tạo', 'budget': 'Ngân Sách'})
                 print(df.to_string(index=False))
+            else:
+                print("Không có dữ liệu!")
+
+        elif ch == "3":
+            ds_dept = dept_service.lay_ds_phong_ban()
+            ds_nv = nv_service.lay_ds_nhan_vien()
+            if ds_dept:
+                print("\n--- Thống kê số nhân viên theo phòng ban ---")
+                for d in ds_dept:
+                    count = dept_service.dem_so_nhan_vien(d['dept_id'], ds_nv)
+                    manager_name = dept_service.thong_tin_truong_phong(d['manager_id'], ds_nv)
+                    print(f"Phòng ban: {d['name']} | Số nhân viên: {count} | Trưởng phòng: {manager_name}")
             else:
                 print("Không có dữ liệu!")
 
@@ -212,9 +243,7 @@ def menu_cham_cong():
         else:
             print("Lựa chọn không hợp lệ!")
 
-# ================================
-# MENU QUẢN LÝ LƯƠNG (MỚI)
-# ================================
+# MENU QUẢN LÝ LƯƠNG
 def menu_luong():
     while True:
         print("\n=== QUẢN LÝ LƯƠNG ===")
@@ -263,7 +292,7 @@ def menu_luong():
             net = rec.calculate_net_salary(tong_muon) # Trừ tiền phạt đi muộn ở đây
 
             print("-" * 30)
-            print(f"💰 LƯƠNG THÁNG {thang}/{nam}")
+            print(f"   LƯƠNG THÁNG {thang}/{nam}")
             print(f"   Lương Gross: {gross:,.0f}")
             print(f"   Phạt đi muộn: -{tong_muon * 2000:,.0f}")
             print(f"   Lương NET:   {net:,.0f}")
