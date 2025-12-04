@@ -75,7 +75,7 @@ def menu_nhan_vien():
                 df = pd.DataFrame(ds)
                 df = df.drop(columns= '_id')
                 df = df.rename(columns={'employee_id': 'ID', 'ho_ten': 'Họ Tên', 'ngay_sinh': 'Ngày Sinh', 'gioi_tinh': 'Giới Tính', 'dept_id': 'Phòng Ban', 'position_id': 'Chức Vụ', 'ngay_vao_lam': 'Ngày Vào Làm', 'email': 'Email', 'phone': 'SĐT', 'address': 'Địa Chỉ', 'status': 'Trạng Thái'})
-                print(df.to_string(index=False))
+                print(df)
             else:
                 print("Không có dữ liệu!")
 
@@ -86,7 +86,7 @@ def menu_nhan_vien():
                 df = pd.DataFrame(result)
                 df = df.drop(columns='_id')
                 df = df.rename(columns={'employee_id': 'ID', 'ho_ten': 'Họ Tên', 'ngay_sinh': 'Ngày Sinh', 'gioi_tinh': 'Giới Tính', 'dept_id': 'Phòng Ban', 'position_id': 'Chức Vụ', 'ngay_vao_lam': 'Ngày Vào Làm', 'email': 'Email', 'phone': 'SĐT', 'address': 'Địa Chỉ', 'status': 'Trạng Thái'})
-                print(df.to_string(index=False))
+                print(df)
             else:
                 print("Không tìm thấy nhân viên với ID này!")
         
@@ -97,7 +97,7 @@ def menu_nhan_vien():
                 df = pd.DataFrame(result)
                 df = df.drop(columns='_id')
                 df = df.rename(columns={'employee_id': 'ID', 'ho_ten': 'Họ Tên', 'ngay_sinh': 'Ngày Sinh', 'gioi_tinh': 'Giới Tính', 'dept_id': 'Phòng Ban', 'position_id': 'Chức Vụ', 'ngay_vao_lam': 'Ngày Vào Làm', 'email': 'Email', 'phone': 'SĐT', 'address': 'Địa Chỉ', 'status': 'Trạng Thái'})
-                print(df.to_string(index=False))
+                print(df)
             else:
                 print("Không tìm thấy nhân viên với tên này!")
         elif ch == "5":
@@ -106,7 +106,7 @@ def menu_nhan_vien():
 
         elif ch == "6":
             eid = nhap_khong_trong("ID nhân viên cần cập nhật")
-            field = nhap_khong_trong("Trường cần sửa")
+            field = nhap_khong_trong("Cột cần sửa")
             value = nhap_khong_trong("Giá trị mới")
             nv_service.cap_nhat_nhan_vien(eid, {field: value})
 
@@ -142,7 +142,7 @@ def menu_phong_ban():
                 df = pd.DataFrame(ds)
                 df = df.drop(columns= '_id')
                 df = df.rename(columns={'dept_id': 'ID Phòng Ban', 'name': 'Tên Phòng Ban', 'manager_id': 'Trưởng Phòng', 'created_date': 'Ngày Tạo', 'budget': 'Ngân Sách'})
-                print(df.to_string(index=False))
+                print(df)
             else:
                 print("Không có dữ liệu!")
 
@@ -190,7 +190,7 @@ def menu_chuc_vu():
                 df = pd.DataFrame(ds)
                 df = df.drop(columns= '_id')
                 df = df.rename(columns={'position_id': 'ID Chức Vụ', 'title': 'Tên Chức Vụ', 'level': 'Level', 'min_salary': 'Lương Tối Thiểu', 'max_salary': 'Lương Tối Đa'})
-                print(df.to_string(index=False))
+                print(df)
             else:
                 print("Không có dữ liệu!")
 

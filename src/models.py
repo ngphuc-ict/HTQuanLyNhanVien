@@ -26,8 +26,7 @@ POSITION_RULES = {
     }
 }
 
-# 1. NHÂN VIÊN
-
+# NHÂN VIÊN
 class NhanVien:
     def __init__(self, employee_id, ho_ten, ngay_sinh, gioi_tinh, dept_id, position_id, ngay_vao_lam, email, phone, address, status="Active"):
         self.employee_id = employee_id
@@ -42,8 +41,7 @@ class NhanVien:
         self.address = address
         self.status = status
 
-# 2. PHÒNG BAN
-
+# PHÒNG BAN
 class Department:
     def __init__(self, dept_id, name, manager_id, created_date, budget):
         self.dept_id = dept_id
@@ -52,7 +50,7 @@ class Department:
         self.created_date = created_date
         self.budget = budget
 
-# 3. CHỨC VỤ
+# CHỨC VỤ
 
 class Position:
     def __init__(self, position_id, title, level, min_salary, max_salary):
