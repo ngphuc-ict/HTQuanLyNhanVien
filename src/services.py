@@ -8,8 +8,7 @@ class NhanVienService:
         self.col = self.db["nhanvien"]
 
     def them_nhan_vien(self, nv: NhanVien):
-        if self.col.find_one({"employee_id": nv.employee_id}):
-        print("Nhân viên đã tồn tại! Vui lòng nhập ID khác.")
+
         return
         data = vars(nv).copy()
         for key, value in data.items():
