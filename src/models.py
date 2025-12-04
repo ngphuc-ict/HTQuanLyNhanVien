@@ -1,4 +1,5 @@
 from datetime import *
+from datetime import datetime, timedelta
 
 # Cấu hình mặc định cho tính lương
 WORKDAYS_PER_MONTH = 26
@@ -64,6 +65,7 @@ class Position:
 
 # 4. CHẤM CÔNG
 class Attendance:
+    # Định nghĩa ca mặc định
     SHIFTS = {
         "morning": {"start": "08:00", "end": "12:00"},
         "afternoon": {"start": "13:00", "end": "17:00"}
@@ -75,24 +77,48 @@ class Attendance:
         self.date = date
         self.check_in = None
         self.check_out = None
+        self.status = "Absent"
         self.late_minutes = 0
         self.leave_minutes = 0
 
     def mark_check_in(self):
+        """Check-in tự động lấy giờ hiện tại (chỉ nhận nút bấm, không nhập thủ công)"""
         if self.check_in:
-            raise ValueError("Đã có check-in")
+            raise ValueError("Check-in đã tồn tại")
+        # Kiểm tra ngày hiện tại khớp với self.date
+        today = datetime.now().strftime("%Y-%m-%d")
+        if today != self.date:
+            raise ValueError(f"Ngày không khớp: hôm nay là {today} nhưng record cho ngày {self.date}")
         self.check_in = datetime.now()
+        self.status = "Present"
 
     def mark_check_out(self):
+        """Check-out tự động lấy giờ hiện tại và tính muộn/về sớm (chỉ nhận nút bấm, không nhập thủ công)"""
         if not self.check_in:
             raise ValueError("Chưa check-in")
         if self.check_out:
-            raise ValueError("Đã có check-out")
+            raise ValueError("Check-out đã tồn tại")
+        # Kiểm tra ngày hiện tại khớp với self.date
+        today = datetime.now().strftime("%Y-%m-%d")
+        if today != self.date:
+            raise ValueError(f"Ngày không khớp: hôm nay là {today} nhưng record cho ngày {self.date}")
         self.check_out = datetime.now()
         self._compute_late_and_early()
 
+    def detect_shift(self):
+        """Xác định ca dựa trên giờ check-in"""
+        if not self.check_in:
+            return "morning"
+        time_only = self.check_in.time()
+        for name, s in self.SHIFTS.items():
+            start = datetime.strptime(s["start"], "%H:%M").time()
+            end = datetime.strptime(s["end"], "%H:%M").time()
+            if start <= time_only <= end:
+                return name
+        return "morning"
+
     def _compute_late_and_early(self):
-        """Tính đi muộn và về sớm theo ca"""
+        """Tính số phút đi muộn và về sớm theo ca"""
         shift = self.detect_shift()
         s = self.SHIFTS[shift]
         shift_start = datetime.combine(datetime.strptime(self.date, "%Y-%m-%d").date(),
@@ -103,38 +129,27 @@ class Attendance:
         self.late_minutes = max(0, int((self.check_in - shift_start).total_seconds() // 60))
         self.leave_minutes = max(0, int((shift_end - self.check_out).total_seconds() // 60))
 
-    def detect_shift(self):
-        """Xác định ca dựa trên giờ check-in"""
-        time_only = self.check_in.time()
-        for name, s in self.SHIFTS.items():
-            start = datetime.strptime(s["start"], "%H:%M").time()
-            end = datetime.strptime(s["end"], "%H:%M").time()
-            if start <= time_only <= end:
-                return name
-        return "morning"
-
     def calculate_working_hours(self):
+        """Tính tổng số giờ làm việc"""
         if not self.check_in or not self.check_out:
             return 0.0
         diff = self.check_out - self.check_in
         return round(diff.total_seconds() / 3600, 2)
 
-    
+    def to_dict(self):
+        """Xuất dữ liệu dạng dictionary"""
+        return {
+            "attendance_id": self.attendance_id,
+            "employee_id": self.employee_id,
+            "date": self.date,
+            "check_in": self.check_in.strftime("%Y-%m-%d %H:%M:%S") if self.check_in else "",
+            "check_out": self.check_out.strftime("%Y-%m-%d %H:%M:%S") if self.check_out else "",
+            "working_hours": self.calculate_working_hours(),
+            "late_minutes": self.late_minutes,
+            "leave_minutes": self.leave_minutes,
+            "status": self.status
+        }
 
-    def to_csv_row(self):
-        """trả về file csv(Phúc sửa đoạn này cho anh để nó trả về database nhé)."""
-        return [
-            self.attendance_id,
-            self.employee_id,
-            self.date,
-            self.check_in or "",
-            self.check_out or "",
-            str(self.calculate_working_hours()),
-            str(self.late_minutes),
-            str(self.leave_minutes),
-            self.status
-        ]
-    
 
 
 # ===============================

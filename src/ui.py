@@ -214,17 +214,64 @@ def menu_cham_cong():
         if ch == "1":
             eid = nhap_khong_trong("ID nhân viên")
             today = str(date.today())
-            time_in = nhap_khong_trong("Check-in (HH:MM)")
-
-            a = Attendance("AT" + eid + today, eid, today, time_in, None, "Present")
-            att_service.check_in(a)
+            
+            # Tạo bản ghi attendance và gọi mark_check_in() - tự động lấy thời gian hiện tại
+            a = Attendance("AT" + eid + today, eid, today)
+            try:
+                a.mark_check_in()
+                att_service.check_in(a)
+                print(f" Check-in thành công lúc {a.check_in.strftime('%H:%M:%S')}")
+            except ValueError as e:
+                print(f" Lỗi: {e}")
 
         elif ch == "2":
             eid = nhap_khong_trong("ID nhân viên")
             today = str(date.today())
-            time_out = nhap_khong_trong("Check-out (HH:MM)")
-
-            att_service.check_out(eid, today, time_out)
+            
+            # Lấy danh sách attendance của nhân viên, tìm bản ghi hôm nay
+            try:
+                ds = att_service.lay_cham_cong(eid)
+                # Tìm bản ghi với date=today
+                record = None
+                for r in ds:
+                    if r.get("date") == today:
+                        record = r
+                        break
+                
+                if not record:
+                    print("✗ Không tìm thấy bản ghi check-in hôm nay!")
+                else:
+                    # Tạo object Attendance từ bản ghi
+                    a = Attendance(
+                        record["attendance_id"],
+                        record["employee_id"],
+                        record["date"]
+                    )
+                    a.check_in = record.get("check_in")  # Restore check-in từ DB
+                    
+                    # Gọi mark_check_out() - tự động lấy thời gian hiện tại
+                    a.mark_check_out()
+                    
+                    # Cập nhật vào DB (gọi check_out của service - nhưng cần sửa service)
+                    # Tạm thời: cập nhật trực tiếp
+                    att_service.col.update_one(
+                        {"_id": record["_id"]},
+                        {"$set": {
+                            "check_out": a.check_out.strftime("%Y-%m-%d %H:%M:%S"),
+                            "late_minutes": a.late_minutes,
+                            "leave_minutes": a.leave_minutes,
+                            "status": "Completed"
+                        }}
+                    )
+                    
+                    print(f" Check-out thành công lúc {a.check_out.strftime('%H:%M:%S')}")
+                    print(f"  Muộn: {a.late_minutes} phút")
+                    print(f"  Về sớm: {a.leave_minutes} phút")
+                    print(f"  Giờ làm: {a.calculate_working_hours()} giờ")
+            except ValueError as e:
+                print(f" Lỗi: {e}")
+            except Exception as e:
+                print(f" Lỗi không mong muốn: {e}")
 
         elif ch == "3":
             eid = nhap_khong_trong("ID nhân viên")
