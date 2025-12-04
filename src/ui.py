@@ -247,13 +247,14 @@ def menu_cham_cong():
                         record["employee_id"],
                         record["date"]
                     )
-                    a.check_in = record.get("check_in")  # Restore check-in từ DB
+                    # Chuyển đổi chuỗi check_in thành đối tượng datetime
+                    if record.get("check_in"):
+                        a.check_in = datetime.strptime(record["check_in"], "%Y-%m-%d %H:%M:%S")
                     
                     # Gọi mark_check_out() - tự động lấy thời gian hiện tại
                     a.mark_check_out()
                     
-                    # Cập nhật vào DB (gọi check_out của service - nhưng cần sửa service)
-                    # Tạm thời: cập nhật trực tiếp
+                    # Cập nhật vào DB
                     att_service.col.update_one(
                         {"_id": record["_id"]},
                         {"$set": {
@@ -297,16 +298,34 @@ def menu_luong():
         print("1. Tính lương tháng")
         print("2. Xem bảng lương nhân viên")
         print("0. Quay lại")
-        ch = input("Chọn: ").strip()
+        ch = input("Chọn: ").strip() # Dòng này định nghĩa biến 'ch' (Khắc phục NameError)
 
         if ch == "1":
             eid = nhap_khong_trong("Nhập ID nhân viên")
             
-            # 1. Lấy thông tin lương cơ bản từ Chức vụ
-            nv = nv_service.tim_theo_id(eid)
-            if not nv:
+            # 1. Lấy thông tin LƯƠNG CƠ BẢN và CHỨC VỤ
+            nv_data = nv_service.tim_theo_id(eid)
+            if not nv_data:
                 print("Không tìm thấy nhân viên!")
                 continue
+
+            # Lấy thông tin nhân viên (chỉ lấy phần tử đầu tiên)
+            nv = nv_data[0]
+            
+            # Lấy thông tin Chức vụ để tìm Lương cơ bản
+            ds_cv = pos_service.lay_ds_chuc_vu()
+            
+            basic_salary = 0.0
+            position_title = "Nhân viên" # Default position title
+            
+            for cv in ds_cv:
+                if cv['position_id'] == nv['position_id']:
+                    basic_salary = cv.get('min_salary', 0.0)
+                    position_title = cv.get('title', "Nhân viên")
+                    break
+            
+            if basic_salary == 0.0:
+                print(f"Không tìm thấy Lương tối thiểu cho chức vụ: {nv['position_id']}! Dùng lương cơ bản = 0.")
 
             # 2. Quét dữ liệu chấm công để đếm ngày công và phút muộn
             thang = nhap_khong_trong("Nhập tháng (MM)")
@@ -320,28 +339,31 @@ def menu_luong():
                 # cc['date'] dạng YYYY-MM-DD
                 y, m, d = cc['date'].split('-')
                 if y == nam and m == thang and cc.get('check_out'):
-                    ngay_cong += 1
+                    # Sử dụng trực tiếp late_minutes đã tính và lưu trong DB
                     tong_muon += cc.get('late_minutes', 0)
+                    ngay_cong += 1
 
-            print(f"📊 Thống kê: {ngay_cong} ngày công, {tong_muon} phút đi muộn.")
+            print(f"📊 Thống kê: {ngay_cong} ngày công, {tong_muon} phút đi muộn. Lương cơ bản: {basic_salary:,.0f} VNĐ")
 
             # 3. Nhập các chỉ số khác
             ot_hours = nhap_float("Số giờ OT")
-            bonus = nhap_float("Thưởng")
+            bonus_extra = nhap_float("Thưởng (nhập thêm)") 
             kpi = nhap_float("Thưởng KPI")
-            allowance = nhap_float("Phụ cấp")
+            allowance_extra = nhap_float("Phụ cấp (nhập thêm)") 
 
             # 4. Tính toán
             salary_id = f"SAL-{eid}-{nam}{thang}"
-            rec = SalaryRecord(salary_id, eid, int(thang), int(nam), ngay_cong, ot_hours, bonus, kpi, allowance, tax=0)
+            rec = SalaryRecord(salary_id, eid, int(thang), int(nam), ngay_cong, ot_hours, bonus_extra, kpi, allowance_extra, tax=0)
             
-            gross = rec.calculate_gross_salary()
-            net = rec.calculate_net_salary(tong_muon) # Trừ tiền phạt đi muộn ở đây
-
+            # Tính Lương Net bằng cách truyền Lương cơ bản, Chức vụ và phút muộn
+            net = rec.calculate_net_salary(basic_salary, position_title, tong_muon) 
+            gross = rec.gross_salary
+            
             print("-" * 30)
-            print(f"   LƯƠNG THÁNG {thang}/{nam}")
+            print(f"   LƯƠNG THÁNG {thang}/{nam} ({position_title})")
+            print(f"   Lương Cơ Bản: {basic_salary:,.0f}")
             print(f"   Lương Gross: {gross:,.0f}")
-            print(f"   Phạt đi muộn: -{tong_muon * 2000:,.0f}")
+            print(f"   Phạt đi muộn: -{tong_muon * PHAT_DI_MUON_MOT_PHUT:,.0f}")
             print(f"   Lương NET:   {net:,.0f}")
             print("-" * 30)
 
@@ -361,6 +383,9 @@ def menu_luong():
 
         elif ch == "0":
             break
+        
+        else:
+            print("Lựa chọn không hợp lệ!")
 
 # MENU CHÍNH
 def menu_chinh():
